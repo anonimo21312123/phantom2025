@@ -1,5 +1,3 @@
--- Script combinado: Aimbot, ESP e GUI
-
 local ESP = { 
     Enabled = false,
     Boxes = true,
@@ -13,11 +11,10 @@ local ESP = {
     AttachShift = 1,
     TeamMates = true,
     Players = true,
-    Objects = setmetatable({}, {__mode="kv"}),  -- Tabela para armazenar objetos
+    Objects = setmetatable({}, {__mode="kv"}),
     Overrides = {}
 }
 
--- Declarations para ESP
 local cam = workspace.CurrentCamera
 local plrs = game:GetService("Players")
 local plr = plrs.LocalPlayer
@@ -26,7 +23,6 @@ local mouse = plr:GetMouse()
 local V3new = Vector3.new
 local WorldToViewportPoint = cam.WorldToViewportPoint
 
--- Função para desenhar elementos gráficos
 local function Draw(obj, props)
     local new = Drawing.new(obj)
     props = props or {}
@@ -36,7 +32,6 @@ local function Draw(obj, props)
     return new
 end
 
--- Funções de ESP
 function ESP:GetTeam(p)
     local ov = self.Overrides.GetTeam
     if ov then
@@ -120,7 +115,6 @@ function ESP:AddObjectListener(parent, options)
     end
 end
 
--- Função para adicionar objeto à ESP
 function ESP:Add(obj, options)
     if not obj.Parent and not options.RenderInNil then
         return warn(obj, "has no parent")
@@ -145,7 +139,6 @@ function ESP:Add(obj, options)
         self:GetBox(obj):Remove()
     end
 
-    -- Desenhando as partes do ESP
     box.Components["Quad"] = Draw("Quad", {
         Thickness = self.Thickness,
         Color = box.Color,
@@ -179,14 +172,12 @@ function ESP:Add(obj, options)
     })
     self.Objects[obj] = box
     
-    -- Detectando remoção de objetos
     obj.AncestryChanged:Connect(function(_, parent)
         if parent == nil then
             box:Remove()
         end
     end)
 
-    -- Remoção ao morrer
     local hum = obj:FindFirstChildOfClass("Humanoid")
     if hum then
         hum.Died:Connect(function()
@@ -197,7 +188,6 @@ function ESP:Add(obj, options)
     return box
 end
 
--- Função do Aimbot
 local function is_gunsight(t)
     local sightparts = gun_system.currentgun and gun_system.currentgun.aimsightdata
     for _, sightdata in next, sightparts do
@@ -208,7 +198,6 @@ local function is_gunsight(t)
     return false
 end
 
--- Hook para a função "__index"
 local old_index = hookmetamethod(game, "__index", function(t, k)
     if k == "CFrame" and config.aimbot.silent_aim and gun_system.currentgun and (is_gunsight(t) or t == gun_system.currentgun.barrel) then
         local r = weighted_random({hit = config.aimbot.hit_chance, miss = 100 - config.aimbot.hit_chance})
@@ -225,7 +214,6 @@ local old_index = hookmetamethod(game, "__index", function(t, k)
     return old_index(t, k)
 end)
 
--- Funções de ESP para os jogadores
 local function CharAdded(char)
     local p = plrs:GetPlayerFromCharacter(char)
     if not char:FindFirstChild("HumanoidRootPart") then
@@ -267,11 +255,9 @@ game:GetService("RunService").RenderStepped:Connect(function()
     end
 end)
 
--- Criar a GUI para controle do ESP e Aimbot
 local screenGui = Instance.new("ScreenGui")
 screenGui.Parent = plr.PlayerGui
 
--- Criar o Frame principal
 local frame = Instance.new("Frame")
 frame.Parent = screenGui
 frame.Size = UDim2.new(0, 200, 0, 300)
@@ -280,7 +266,6 @@ frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 frame.BackgroundTransparency = 0.5
 frame.BorderSizePixel = 0
 
--- Criar título
 local titleLabel = Instance.new("TextLabel")
 titleLabel.Parent = frame
 titleLabel.Size = UDim2.new(1, 0, 0, 50)
@@ -290,7 +275,6 @@ titleLabel.TextSize = 20
 titleLabel.BackgroundTransparency = 1
 titleLabel.TextAlign = Enum.TextAlign.Center
 
--- Criar botão para ativar/desativar ESP
 local espToggleButton = Instance.new("TextButton")
 espToggleButton.Parent = frame
 espToggleButton.Size = UDim2.new(1, 0, 0, 50)
@@ -300,7 +284,6 @@ espToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 espToggleButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 espToggleButton.TextSize = 18
 
--- Criar botão para ativar/desativar Aimbot
 local aimbotToggleButton = Instance.new("TextButton")
 aimbotToggleButton.Parent = frame
 aimbotToggleButton.Size = UDim2.new(1, 0, 0, 50)
@@ -310,7 +293,6 @@ aimbotToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 aimbotToggleButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 aimbotToggleButton.TextSize = 18
 
--- Função para alternar o ESP
 espToggleButton.MouseButton1Click:Connect(function()
     ESP:Toggle(not ESP.Enabled)
     if ESP.Enabled then
@@ -320,7 +302,6 @@ espToggleButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Função para alternar o Aimbot
 aimbotToggleButton.MouseButton1Click:Connect(function()
     config.aimbot.enabled = not config.aimbot.enabled
     if config.aimbot.enabled then
