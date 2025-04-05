@@ -292,21 +292,3 @@ aimbotToggleButton.Text = "Toggle Aimbot"
 aimbotToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 aimbotToggleButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 aimbotToggleButton.TextSize = 18
-
-espToggleButton.MouseButton1Click:Connect(function()
-    ESP:Toggle(not ESP.Enabled)
-    if ESP.Enabled then
-        espToggleButton.Text = "Toggle ESP (ON)"
-    else
-        espToggleButton.Text = "Toggle ESP (OFF)"
-    end
-end)
-
-aimbotToggleButton.MouseButton1Click:Connect(function()
-    config.aimbot.enabled = not config.aimbot.enabled
-    if config.aimbot.enabled then
-        aimbotToggleButton.Text = "Toggle Aimbot (ON)"
-    else
-        aimbotToggleButton.Text = "Toggle Aimbot (OFF)"
-    end
-end)
